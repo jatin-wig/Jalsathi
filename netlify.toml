@@ -1,0 +1,13 @@
+[build]
+  base = "artifacts/jalsathi"
+  command = "pnpm run build"
+  publish = "dist/public"
+
+[build.environment]
+  BASE_PATH = "/"
+  PORT = "3000"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
