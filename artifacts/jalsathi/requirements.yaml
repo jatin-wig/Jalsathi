@@ -1,0 +1,12 @@
+packages:
+  "framer-motion": "For smooth page transitions and interactive element animations"
+  "date-fns": "For formatting timestamps cleanly"
+  "clsx": "For conditional class merging"
+  "tailwind-merge": "For resolving tailwind class conflicts securely"
+  "lucide-react": "For UI icons (assuming base stack, but explicitly declaring)"
+
+images: []
+
+notes:
+  - "The app relies on local React Context for state since it's a frontend-only demo."
+  - "Using Framer Motion for premium, modern transitions suitable for a polished pitch."

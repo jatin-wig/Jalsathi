@@ -1,0 +1,16 @@
+
+> @workspace/api-server@0.0.0 start D:\Jalsathi\artifacts\api-server
+> node --enable-source-maps ./dist/index.mjs
+
+D:\Jalsathi\artifacts\api-server\src\index.ts:7
+  throw new Error(
+        ^
+
+Error: PORT environment variable is required but was not provided.
+    at <anonymous> (D:\Jalsathi\artifacts\api-server\src\index.ts:7:9)
+    at ModuleJob.run (node:internal/modules/esm/module_job:430:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:661:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.14.1
+ ELIFECYCLE  Command failed with exit code 1.

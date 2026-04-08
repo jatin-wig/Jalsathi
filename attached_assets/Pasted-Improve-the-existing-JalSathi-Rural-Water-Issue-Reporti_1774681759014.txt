@@ -1,0 +1,56 @@
+Improve the existing JalSathi (Rural Water Issue Reporting System) demo to make it more impactful and suitable for a hackathon pitch.
+
+This is still a frontend-only demo (no backend required), but it should clearly demonstrate real-world impact, regional relevance, and decision-making capability.
+
+Make the following enhancements:
+
+1. Region Awareness (VERY IMPORTANT)
+- For each reported issue, display region tags such as:
+  - Rajasthan (Drought-Prone Zone)
+  - Haryana (High Groundwater Usage)
+  - Delhi NCR (Urban Water Stress)
+- Show this as a small badge or label under the location name
+
+2. Priority Score System
+- Add a "Priority Score" (0–100) for each issue
+- The score should depend on urgency level:
+  - Critical → 90–100
+  - High → 70–89
+  - Medium → 40–69
+  - Low → 10–39
+- Display it clearly on each issue card (e.g., “Priority Score: 92/100”)
+
+3. Suggested Action (Decision Support)
+- For each issue, show a “Suggested Action” section:
+  - Example:
+    - Critical → "Deploy water tanker immediately"
+    - High → "Repair pipeline within 24 hours"
+    - Medium → "Schedule inspection"
+    - Low → "Monitor situation"
+- This should be visible inside each issue card
+
+4. Impact Indicators (Top Dashboard Section)
+- Add a summary section at the top showing:
+  - “People Affected” (e.g., 1200+)
+  - “Critical Villages” (e.g., 3 need immediate action)
+  - “Total Active Issues”
+- Use simple cards with icons
+
+5. Visual Improvements
+- Use color coding consistently:
+  - Red → Critical
+  - Orange → High
+  - Yellow → Medium
+  - Green → Low
+- Make the UI look like a government/NGO dashboard (clean and professional)
+
+6. Keep Everything Simple
+- Do NOT add backend or database
+- Use mock/static data only
+- Focus on clarity and visual storytelling
+
+Goal:
+The demo should clearly answer:
+“How does this system help authorities take faster and smarter decisions in Rajasthan, Haryana, and Delhi NCR?”
+
+This is for a hackathon pitch, so prioritize clarity, impact, and presentation over complexity.
