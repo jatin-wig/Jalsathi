@@ -1,6 +1,6 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ToastProvider } from "./components/ui/toast";
+import { ToastProvider } from "./components/ui/Toast";
 import { IssueProvider } from "./context/IssueContext";
 
 // Components

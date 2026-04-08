@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useIssues } from '../context/IssueContext';
-import { useSimpleToast } from '../components/ui/toast';
+import { useSimpleToast } from '../components/ui/Toast';
 import { Droplet, MapPin, AlertTriangle, FileText, Send, Sparkles } from 'lucide-react';
 import { ProblemType, UrgencyLevel } from '../types';
 
