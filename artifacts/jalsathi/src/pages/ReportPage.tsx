@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIssues } from '../context/IssueContext';
-import { useSimpleToast } from '../components/ui/toast';
+import { useSimpleToast } from '../components/ui/Toast';
 import { 
   Droplet, MapPin, AlertTriangle, FileText, Send, Sparkles,
   Mic, Square, Camera, Image as ImageIcon, Type, AudioLines, Plus,
