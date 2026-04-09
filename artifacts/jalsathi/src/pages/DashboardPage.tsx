@@ -15,8 +15,13 @@ import {
   Activity,
   Lightbulb,
   TrendingUp,
+  Map as MapIcon,
+  List as ListIcon,
+  Medal,
+  Award
 } from 'lucide-react';
 import { UrgencyLevel, Status, Issue } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 const URGENCY_WEIGHTS: Record<UrgencyLevel, number> = {
   'Critical': 4,
@@ -60,9 +65,11 @@ const REGION_ZONE_COLORS: Record<string, string> = {
 
 export default function DashboardPage() {
   const { issues, updateIssueStatus } = useIssues();
+  const { t } = useLanguage();
 
   const [statusFilter, setStatusFilter] = useState<Status | 'All'>('All');
   const [sortByPriority, setSortByPriority] = useState(true);
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   const stats = useMemo(() => {
     const active = issues.filter(i => i.status !== 'Resolved');
@@ -101,8 +108,8 @@ export default function DashboardPage() {
 
       {/* Page Header */}
       <div className="mb-6">
-        <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Authority Dashboard</h2>
-        <p className="text-slate-500 mt-1">Monitor and manage rural water complaints across Rajasthan, Haryana, and Delhi NCR.</p>
+        <h2 className="text-3xl font-black text-slate-900 tracking-tight">{t('dashboardTitle')}</h2>
+        <p className="text-slate-500 mt-1">{t('dashboardDesc')}</p>
       </div>
 
       {/* Impact Indicators */}
@@ -110,24 +117,24 @@ export default function DashboardPage() {
         <ImpactCard
           icon={<Users className="w-6 h-6 text-blue-600" />}
           value={`${stats.peopleAffected.toLocaleString()}+`}
-          label="People Affected"
-          sublabel="Across active issues"
+          label={t('peopleAffected')}
+          sublabel={t('acrossActive')}
           color="bg-blue-50 border-blue-200"
           iconBg="bg-blue-100"
         />
         <ImpactCard
           icon={<Siren className="w-6 h-6 text-red-600" />}
           value={stats.criticalVillages.toString()}
-          label="Critical Villages"
-          sublabel="Need immediate action"
+          label={t('criticalVillages')}
+          sublabel={t('needImmediate')}
           color="bg-red-50 border-red-200"
           iconBg="bg-red-100"
         />
         <ImpactCard
           icon={<Activity className="w-6 h-6 text-orange-600" />}
           value={stats.activeIssues.toString()}
-          label="Total Active Issues"
-          sublabel="Pending + Assigned"
+          label={t('activeIssues')}
+          sublabel={t('pendingAssigned')}
           color="bg-orange-50 border-orange-200"
           iconBg="bg-orange-100"
         />
@@ -135,61 +142,212 @@ export default function DashboardPage() {
 
       {/* Status Summary Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <StatCard title="Total Reports" value={stats.total} icon={<MapPin className="w-5 h-5 text-blue-500" />} bg="bg-blue-50" border="border-blue-100" />
-        <StatCard title="Pending" value={stats.pending} icon={<Clock className="w-5 h-5 text-amber-500" />} bg="bg-amber-50" border="border-amber-100" />
-        <StatCard title="Assigned" value={stats.assigned} icon={<AlertCircle className="w-5 h-5 text-indigo-500" />} bg="bg-indigo-50" border="border-indigo-100" />
-        <StatCard title="Resolved" value={stats.resolved} icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />} bg="bg-emerald-50" border="border-emerald-100" />
+        <StatCard title={t('totalReports')} value={stats.total} icon={<MapPin className="w-5 h-5 text-blue-500" />} bg="bg-blue-50" border="border-blue-100" />
+        <StatCard title={t('pending')} value={stats.pending} icon={<Clock className="w-5 h-5 text-amber-500" />} bg="bg-amber-50" border="border-amber-100" />
+        <StatCard title={t('assigned')} value={stats.assigned} icon={<AlertCircle className="w-5 h-5 text-indigo-500" />} bg="bg-indigo-50" border="border-indigo-100" />
+        <StatCard title={t('resolved')} value={stats.resolved} icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />} bg="bg-emerald-50" border="border-emerald-100" />
       </div>
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <Filter className="w-4 h-4 text-slate-400" />
-          <span className="text-sm font-medium text-slate-600">Filter by Status:</span>
+          <span className="text-sm font-medium text-slate-600">{t('filterByStatus')}</span>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as Status | 'All')}
             className="bg-slate-50 border border-slate-200 text-sm rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-blue-500/20 outline-none flex-1 sm:flex-none cursor-pointer"
           >
-            <option value="All">All Statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="Assigned">Assigned</option>
-            <option value="Resolved">Resolved</option>
+            <option value="All">{t('allStatuses')}</option>
+            <option value="Pending">{t('PendingSelect')}</option>
+            <option value="Assigned">{t('AssignedSelect')}</option>
+            <option value="Resolved">{t('ResolvedSelect')}</option>
           </select>
         </div>
 
-        <button
-          onClick={() => setSortByPriority(!sortByPriority)}
-          className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all w-full sm:w-auto ${
-            sortByPriority
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-          }`}
-        >
-          <ArrowDownUp className="w-4 h-4" />
-          {sortByPriority ? 'Priority: Critical First ✓' : 'Sort by Priority'}
-        </button>
+        <div className="flex flex-1 justify-end w-full sm:w-auto gap-4">
+          <button
+            onClick={() => setSortByPriority(!sortByPriority)}
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              sortByPriority
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            <ArrowDownUp className="w-4 h-4" />
+            <span className="hidden sm:inline">{sortByPriority ? t('sortPriority') : t('sortDefault')}</span>
+            <span className="sm:hidden">Sort</span>
+          </button>
+          
+          <div className="flex bg-slate-100 p-1 rounded-xl">
+            <button 
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm ring-1 ring-slate-200 text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              <ListIcon className="w-4 h-4" /> <span className="hidden sm:inline">{t('listView')}</span>
+            </button>
+            <button 
+              onClick={() => setViewMode('map')}
+              className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${viewMode === 'map' ? 'bg-white shadow-sm ring-1 ring-slate-200 text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}
+            >
+              <MapIcon className="w-4 h-4" /> <span className="hidden sm:inline">{t('mapView')}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Issues List */}
-      <div className="space-y-4">
-        {displayedIssues.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 border-dashed">
-            <CheckCircle2 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-slate-900">No issues found</h3>
-            <p className="text-slate-500 mt-1">No reports match your current filters.</p>
+      <div className="flex flex-col lg:flex-row gap-6">
+        
+        {/* Left Side: Map or List View */}
+        <div className="flex-1 space-y-4">
+          {viewMode === 'map' ? (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="w-full bg-slate-950 rounded-[2.5rem] h-[650px] flex items-center justify-center relative overflow-hidden shadow-2xl border border-slate-800"
+            >
+              {/* Complex Animated Background Map */}
+              <div className="absolute inset-0 opacity-30 select-none">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1),transparent_70%)]" />
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
+                <svg className="w-full h-full text-slate-700/50" viewBox="0 0 800 600" fill="none">
+                  <path d="M100,100 Q200,50 300,100 T500,150 T700,100" stroke="currentColor" strokeWidth="0.5" />
+                  <path d="M50,300 Q200,350 400,300 T750,250" stroke="currentColor" strokeWidth="0.5" />
+                  <path d="M150,500 Q350,450 550,500 T750,450" stroke="currentColor" strokeWidth="0.5" />
+                </svg>
+              </div>
+
+              {/* Dynamic Crisis Pulses */}
+              <div className="absolute inset-0 z-10">
+                {/* Cluster 1: Nangal */}
+                <div className="absolute top-[30%] left-[45%] group cursor-pointer">
+                  <div className="relative">
+                    <div className="absolute -inset-8 bg-red-500/20 rounded-full animate-ping duration-[3s]" />
+                    <div className="absolute -inset-4 bg-red-500/30 rounded-full animate-ping duration-[2s]" />
+                    <div className="relative w-4 h-4 bg-red-600 rounded-full shadow-[0_0_20px_rgba(220,38,38,0.8)] border-2 border-white ring-4 ring-red-500/20" />
+                  </div>
+                  <div className="absolute top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none bg-slate-900/90 backdrop-blur-md border border-white/10 p-3 rounded-xl w-40 shadow-2xl z-20">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1">{t('criticalZone')}</div>
+                    <div className="text-white font-bold text-sm">{t('nangalCluster')}</div>
+                    <div className="text-slate-400 text-[10px] mt-1">{t('reportsHigh')}</div>
+                  </div>
+                </div>
+
+                {/* Cluster 2: Bhusawar */}
+                <div className="absolute top-[55%] left-[65%] group cursor-pointer">
+                  <div className="relative">
+                    <div className="absolute -inset-6 bg-orange-500/20 rounded-full animate-ping duration-[4s]" />
+                    <div className="relative w-3 h-3 bg-orange-500 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.6)] border-2 border-white" />
+                  </div>
+                  <div className="absolute top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none bg-slate-900/90 backdrop-blur-md border border-white/10 p-3 rounded-xl w-40 shadow-2xl z-20">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">{t('activeCluster')}</div>
+                    <div className="text-white font-bold text-sm">{t('bhusawarArea')}</div>
+                    <div className="text-slate-400 text-[10px] mt-1">{t('reportsMed')}</div>
+                  </div>
+                </div>
+
+                {/* Cluster 3: Jaipur */}
+                <div className="absolute top-[70%] left-[25%] group cursor-pointer">
+                  <div className="relative">
+                    <div className="absolute -inset-4 bg-blue-500/10 rounded-full animate-ping duration-[5s]" />
+                    <div className="relative w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)] border-2 border-white" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Map UI Overlay */}
+              <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end z-20">
+                <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 p-5 rounded-[2rem] shadow-2xl ring-1 ring-white/5 max-w-xs">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">{t('crisisCluster')}</span>
+                  </div>
+                  <h3 className="text-white font-black text-xl mb-1">{t('nangalRegion')}</h3>
+                  <p className="text-slate-400 text-xs leading-relaxed mb-4">{t('nangalDesc')}</p>
+                  
+                  <div className="flex gap-3">
+                    <div className="bg-white/5 rounded-2xl px-3 py-2 border border-white/5">
+                      <div className="text-white font-black text-lg leading-none">{stats.criticalVillages}</div>
+                      <div className="text-[8px] uppercase font-bold text-white/40 mt-1">{t('village')}</div>
+                    </div>
+                    <div className="bg-white/5 rounded-2xl px-3 py-2 border border-white/5">
+                      <div className="text-white font-black text-lg leading-none">96.4%</div>
+                      <div className="text-[8px] uppercase font-bold text-white/40 mt-1">{t('intensity')}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Legend Overlay */}
+                <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 p-3 rounded-2xl flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_red]" />
+                    <span className="text-[10px] text-white font-bold">{t('Critical')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_orange]" />
+                    <span className="text-[10px] text-white font-bold">{t('High')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span className="text-[10px] text-white font-bold">{t('standard')}</span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ) : displayedIssues.length === 0 ? (
+            <div className="text-center py-20 bg-white rounded-2xl border border-slate-200 border-dashed">
+              <CheckCircle2 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-slate-900">{t('noIssuesFound')}</h3>
+              <p className="text-slate-500 mt-1">{t('noFilterMatches')}</p>
+            </div>
+          ) : (
+            <AnimatePresence mode="popLayout">
+              {displayedIssues.map((issue) => (
+                <IssueCard
+                  key={issue.id}
+                  issue={issue}
+                  onStatusChange={(status) => updateIssueStatus(issue.id, status)}
+                />
+              ))}
+            </AnimatePresence>
+          )}
+        </div>
+
+        {/* Right Side: Sidebar */}
+        <div className="w-full lg:w-80 shrink-0 space-y-6">
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 sticky top-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="bg-amber-100 p-2.5 rounded-xl border border-amber-200 shadow-inner">
+                <Medal className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-900 leading-tight">{t('topContributors')}</h3>
+                <p className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 font-display">{t('honestReporting')}</p>
+              </div>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed mb-6 font-medium bg-slate-50 p-3 rounded-xl border border-slate-100">
+              {t('sidebarDesc')}
+            </p>
+            <div className="space-y-3">
+              {[
+                { name: 'Ramesh Singh', points: 1240, reports: 12 },
+                { name: 'Anita Devi', points: 980, reports: 8 },
+                { name: 'Kamlesh V.', points: 750, reports: 6 }
+              ].map((user, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors cursor-default">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 font-bold text-sm shadow-sm">
+                    #{i+1}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold text-sm text-slate-900">{user.name}</div>
+                    <div className="text-xs text-slate-500 font-medium">{user.points.toLocaleString()} pts</div>
+                  </div>
+                  <Award className={`w-6 h-6 ${i === 0 ? 'text-amber-400' : i === 1 ? 'text-slate-400' : 'text-amber-700'}`} />
+                </div>
+              ))}
+            </div>
           </div>
-        ) : (
-          <AnimatePresence mode="popLayout">
-            {displayedIssues.map((issue) => (
-              <IssueCard
-                key={issue.id}
-                issue={issue}
-                onStatusChange={(status) => updateIssueStatus(issue.id, status)}
-              />
-            ))}
-          </AnimatePresence>
-        )}
+        </div>
       </div>
     </div>
   );
@@ -235,6 +393,7 @@ function StatCard({ title, value, icon, bg, border }: { title: string; value: nu
 
 function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s: Status) => void }) {
   const urgencyStyle = URGENCY_COLORS[issue.urgency];
+  const { t } = useLanguage();
 
   const getStatusColor = (s: Status) => {
     switch (s) {
@@ -245,14 +404,16 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
   };
 
   const scoreColor = issue.priorityScore >= 90
-    ? 'text-red-700 bg-red-50 border-red-200'
+    ? 'text-red-700 bg-red-50/50 border-red-100 shadow-[0_0_20px_rgba(239,68,68,0.1)]'
     : issue.priorityScore >= 70
-    ? 'text-orange-700 bg-orange-50 border-orange-200'
+    ? 'text-orange-700 bg-orange-50/50 border-orange-100'
     : issue.priorityScore >= 40
-    ? 'text-yellow-700 bg-yellow-50 border-yellow-200'
-    : 'text-emerald-700 bg-emerald-50 border-emerald-200';
+    ? 'text-yellow-700 bg-yellow-50/50 border-yellow-100'
+    : 'text-emerald-700 bg-emerald-50/50 border-emerald-100';
 
   const zoneColor = REGION_ZONE_COLORS[issue.regionZone] ?? 'bg-slate-50 text-slate-600 border-slate-200';
+
+  const daysActive = Math.max(1, Math.floor((Date.now() - issue.reportedAt.getTime()) / (1000 * 60 * 60 * 24)));
 
   return (
     <motion.div
@@ -271,7 +432,7 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
             {issue.id}
           </span>
           <span className={`text-xs font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider ${urgencyStyle.badge}`}>
-            ● {issue.urgency}
+            ● {t(issue.urgency)}
           </span>
           <span className="text-xs text-slate-400 font-medium flex items-center gap-1 ml-auto">
             <Clock className="w-3.5 h-3.5" />
@@ -279,19 +440,19 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
           </span>
         </div>
 
-        <div className="flex flex-col lg:flex-row lg:items-start gap-5">
+        <div className="flex flex-col lg:flex-row lg:items-stretch gap-10">
 
           {/* Left: Main Info */}
-          <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-slate-900 mb-1">{issue.problem}</h3>
+          <div className="flex-1 min-w-0 flex flex-col">
+            <h3 className="text-2xl font-black text-slate-900 mb-2 leading-tight tracking-tight">{t(issue.problem)}</h3>
 
             {/* Location + Region Zone */}
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="flex items-center text-sm text-slate-700 gap-1 font-semibold">
-                <MapPin className="w-4 h-4 text-slate-400" />
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <span className="flex items-center text-base text-slate-700 gap-1.5 font-bold">
+                <MapPin className="w-5 h-5 text-slate-400" />
                 {issue.village}
-                <span className="text-slate-400 font-normal">·</span>
-                <span className="text-slate-600 font-medium">{issue.region}</span>
+                <span className="text-slate-300 font-normal">·</span>
+                <span className="text-slate-500 font-semibold">{issue.region}</span>
               </span>
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${zoneColor}`}>
                 {issue.regionZone}
@@ -302,64 +463,120 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
             {issue.peopleAffected != null && (
               <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-3">
                 <Users className="w-3.5 h-3.5" />
-                <span className="font-medium">{issue.peopleAffected.toLocaleString()} people affected</span>
+                <span className="font-medium">{issue.peopleAffected.toLocaleString()} {t('peopleAffectedText')}</span>
               </div>
             )}
 
             {/* Details */}
             {issue.details && (
-              <p className="text-sm text-slate-500 line-clamp-2 border-l-2 border-slate-200 pl-3 mb-3">
+              <p className="text-base text-slate-500 line-clamp-3 border-l-4 border-slate-100 pl-4 my-4 italic font-medium">
                 "{issue.details}"
               </p>
             )}
 
             {/* Suggested Action */}
             {issue.suggestedAction && (
-              <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5">
-                <Lightbulb className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-                <div>
-                  <span className="text-xs font-bold text-amber-800 uppercase tracking-wide">Suggested Action</span>
-                  <p className="text-sm font-semibold text-amber-900 mt-0.5">{issue.suggestedAction}</p>
+              <div className="flex items-start gap-3 bg-amber-50/50 border border-amber-100 rounded-[1.5rem] px-5 py-4 mt-auto">
+                <Lightbulb className="w-6 h-6 text-amber-500 mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <span className="text-[11px] font-black text-amber-600 uppercase tracking-[0.15em] block mb-1">{t('recommendedAction')}</span>
+                  <p className="text-base font-bold text-amber-900 leading-relaxed">{issue.suggestedAction}</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Right: Score + Status */}
-          <div className="flex lg:flex-col items-center lg:items-end gap-4 lg:gap-3 lg:shrink-0 lg:w-44">
+          <div className="flex lg:flex-col items-center lg:items-end justify-between lg:justify-start gap-6 lg:shrink-0 lg:w-64">
 
-            {/* Priority Score */}
+            {/* Priority Score & Metrics */}
             {issue.priorityScore != null && (
-              <div className={`flex flex-col items-center rounded-xl border px-4 py-3 w-full lg:w-auto ${scoreColor}`}>
-                <div className="flex items-center gap-1 mb-1">
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  <span className="text-xs font-bold uppercase tracking-wide">Priority Score</span>
-                </div>
-                <div className="text-2xl font-extrabold leading-tight">{issue.priorityScore}<span className="text-sm font-medium opacity-60">/100</span></div>
-                <div className="w-full h-1.5 bg-black/10 rounded-full mt-2">
-                  <div
-                    className={`h-full rounded-full ${urgencyStyle.bar}`}
-                    style={{ width: `${issue.priorityScore}%` }}
-                  />
+              <div className="w-full group">
+                <div className={`relative p-5 rounded-[2rem] border backdrop-blur-md transition-all duration-500 ${scoreColor} overflow-hidden group-hover:shadow-xl group-hover:shadow-current/5 group-hover:-translate-y-1`}>
+                  
+                  {/* Advanced Pulsing Background for High Priority */}
+                  {issue.priorityScore >= 70 && (
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="absolute -inset-[100%] animate-[spin_8s_linear_infinite] opacity-10 bg-[conic-gradient(from_0deg,transparent,currentColor,transparent)]" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent" />
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between mb-5 relative z-10">
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-1.5 mb-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">Analytics</span>
+                      </div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-4xl font-black tracking-tighter leading-none">{issue.priorityScore}</span>
+                        <span className="text-xs font-bold opacity-30">/100</span>
+                      </div>
+                    </div>
+                    
+                    {/* Stylized Gauge */}
+                    <div className="relative w-14 h-14">
+                      <svg className="w-full h-full -rotate-90 filter drop-shadow-[0_0_8px_rgba(0,0,0,0.05)]" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="16" fill="none" className="stroke-current opacity-[0.08]" strokeWidth="4" />
+                        <motion.circle 
+                          initial={{ strokeDashoffset: 100 }}
+                          animate={{ strokeDashoffset: 100 - issue.priorityScore }}
+                          transition={{ duration: 1.5, ease: "easeOut" }}
+                          cx="18" cy="18" r="16" fill="none" className="stroke-current" strokeWidth="4" 
+                          strokeDasharray="100, 100"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <TrendingUp className="w-5 h-5 opacity-30" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Glassmorph Metrics Row */}
+                  <div className="grid grid-cols-3 gap-2 mt-2 relative z-10">
+                    {[
+                      { icon: Users, val: issue.peopleAffected, label: t('peopleAffected'), col: 'text-slate-600' },
+                      { icon: Activity, val: issue.reportsCount, label: t('reports'), col: 'text-blue-600' },
+                      { icon: Clock, val: daysActive, label: t('days'), col: 'text-orange-600' }
+                    ].map((m, idx) => (
+                      <div key={idx} className="flex flex-col items-center py-2 px-1 rounded-2xl bg-white/40 border border-white/60 shadow-[0_2px_10px_-3px_rgba(0,0,0,0.05)] backdrop-blur-xl hover:bg-white/60 transition-colors">
+                        <m.icon className={`w-3.5 h-3.5 ${m.col} mb-1`} />
+                        <span className={`text-[11px] font-black tracking-tight ${m.col}`}>{m.val?.toLocaleString() ?? 0}</span>
+                        <span className="text-[7px] font-bold uppercase tracking-widest opacity-40 mt-0.5">{m.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
 
-            {/* Status Selector */}
-            <div className="w-full lg:w-auto">
-              <div className="text-xs font-semibold text-slate-400 mb-1.5 hidden lg:block">Update Status</div>
-              <div className="relative w-full">
-                <select
-                  value={issue.status}
-                  onChange={(e) => onStatusChange(e.target.value as Status)}
-                  className={`w-full appearance-none font-semibold text-sm rounded-xl px-4 py-2.5 border cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors shadow-sm ${getStatusColor(issue.status)}`}
-                >
-                  <option value="Pending">Pending</option>
-                  <option value="Assigned">Assigned</option>
-                  <option value="Resolved">Resolved</option>
-                </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">
-                  <ChevronDown className="w-4 h-4" />
+            {/* Premium Status Pill */}
+            <div className="w-full mt-auto">
+              <div className="flex items-center gap-2 mb-2 px-1">
+                <Activity className="w-3 h-3 text-slate-400" />
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('systemStatus')}</span>
+              </div>
+              <div className="relative group/status">
+                <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all duration-300 ${getStatusColor(issue.status)} shadow-sm group-hover/status:shadow-md cursor-pointer relative overflow-hidden`}>
+                  <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold opacity-60 leading-none mb-1">{t('currentState')}</span>
+                    <span className="font-black text-sm tracking-tight">{t(issue.status.toLowerCase())}</span>
+                  </div>
+                  
+                  <select
+                    value={issue.status}
+                    onChange={(e) => onStatusChange(e.target.value as Status)}
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-20"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="Resolved">Resolved</option>
+                  </select>
+
+                  <div className="bg-white/50 p-1.5 rounded-lg border border-white/60 group-hover/status:scale-110 transition-transform">
+                    <ChevronDown className="w-4 h-4 opacity-70" />
+                  </div>
                 </div>
               </div>
             </div>

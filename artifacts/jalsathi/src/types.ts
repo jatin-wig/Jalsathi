@@ -1,13 +1,13 @@
 export type UrgencyLevel = 'Low' | 'Medium' | 'High' | 'Critical';
 export type Status = 'Pending' | 'Assigned' | 'Resolved';
-export type ProblemType = 'Handpump Broken' | 'Borewell Failure' | 'No Water Supply' | 'Tanker Required';
+export type ProblemType = 'Handpump Broken' | 'Borewell Failure' | 'No Water Supply' | 'Tanker Required' | 'Other';
 
 export interface Issue {
   id: string;
   village: string;
   region: string;
   regionZone: string;
-  problem: ProblemType;
+  problem: ProblemType | string;
   urgency: UrgencyLevel;
   status: Status;
   details?: string;
@@ -15,4 +15,6 @@ export interface Issue {
   priorityScore: number;
   suggestedAction: string;
   peopleAffected: number;
+  reportsCount?: number;
+  gpsLocation?: string;
 }

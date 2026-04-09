@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useRoute } from 'wouter';
-import { Droplet, Menu } from 'lucide-react';
+import { Droplet, Menu, Languages } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useLanguage, Language } from '../../context/LanguageContext';
 
 export default function Header() {
   const [isReportActive] = useRoute('/');
   const [isDashboardActive] = useRoute('/dashboard');
+  const { language, setLanguage, t } = useLanguage();
 
   return (
     <header className="bg-primary text-primary-foreground sticky top-0 z-40 shadow-md">
@@ -38,7 +40,7 @@ export default function Header() {
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
-              <span className="relative z-10">Report an Issue</span>
+              <span className="relative z-10">{t('reportTitle')}</span>
             </Link>
             
             <Link 
@@ -54,15 +56,33 @@ export default function Header() {
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
-              <span className="relative z-10">Admin Dashboard</span>
+              <span className="relative z-10">{t('dashboardTitle')}</span>
             </Link>
           </nav>
 
-          {/* Mobile Nav Toggle (Simplified for demo) */}
-          <div className="md:hidden flex items-center">
-            <button className="p-2 text-blue-100 hover:text-white bg-white/5 rounded-lg">
-              <Menu className="w-5 h-5" />
-            </button>
+          {/* Language Switcher & Mobile Nav */}
+          <div className="flex items-center gap-4">
+            <div className="flex bg-black/10 p-1 rounded-xl">
+              {(['en', 'hi', 'mw'] as Language[]).map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => setLanguage(lang)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    language === lang 
+                      ? 'bg-white text-primary shadow-sm' 
+                      : 'text-blue-200 hover:text-white hover:bg-white/5'
+                  }`}
+                >
+                  {lang.toUpperCase()}
+                </button>
+              ))}
+            </div>
+            
+            <div className="md:hidden flex items-center">
+              <button className="p-2 text-blue-100 hover:text-white bg-white/5 rounded-lg">
+                <Menu className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -75,7 +95,7 @@ export default function Header() {
             isReportActive ? 'border-white text-white bg-white/5' : 'border-transparent text-blue-200'
           }`}
         >
-          Report Issue
+          <span className="relative z-10">{t('reportTitle')}</span>
         </Link>
         <Link 
           href="/dashboard" 
@@ -83,7 +103,7 @@ export default function Header() {
             isDashboardActive ? 'border-white text-white bg-white/5' : 'border-transparent text-blue-200'
           }`}
         >
-          Dashboard
+          {t('dashboardTitle')}
         </Link>
       </div>
     </header>

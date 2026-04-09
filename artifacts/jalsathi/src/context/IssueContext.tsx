@@ -56,6 +56,7 @@ const MOCK_ISSUES: Issue[] = [
     priorityScore: 54,
     suggestedAction: 'Schedule inspection this week',
     peopleAffected: 130,
+    reportsCount: 2,
   },
   {
     id: 'JL-1029',
@@ -70,6 +71,7 @@ const MOCK_ISSUES: Issue[] = [
     priorityScore: 96,
     suggestedAction: 'Deploy water tanker immediately',
     peopleAffected: 980,
+    reportsCount: 6,
   },
   {
     id: 'JL-5531',
@@ -84,6 +86,7 @@ const MOCK_ISSUES: Issue[] = [
     priorityScore: 81,
     suggestedAction: 'Repair within 24 hours',
     peopleAffected: 340,
+    reportsCount: 3,
   },
   {
     id: 'JL-2294',
@@ -98,6 +101,7 @@ const MOCK_ISSUES: Issue[] = [
     priorityScore: 47,
     suggestedAction: 'Schedule inspection this week',
     peopleAffected: 95,
+    reportsCount: 1,
   },
   {
     id: 'JL-9930',
@@ -112,6 +116,7 @@ const MOCK_ISSUES: Issue[] = [
     priorityScore: 93,
     suggestedAction: 'Deploy water tanker immediately',
     peopleAffected: 1150,
+    reportsCount: 8,
   },
   {
     id: 'JL-4122',
@@ -126,6 +131,7 @@ const MOCK_ISSUES: Issue[] = [
     priorityScore: 22,
     suggestedAction: 'Monitor situation',
     peopleAffected: 35,
+    reportsCount: 1,
   },
   {
     id: 'JL-7718',
@@ -140,6 +146,7 @@ const MOCK_ISSUES: Issue[] = [
     priorityScore: 75,
     suggestedAction: 'Repair within 24 hours',
     peopleAffected: 270,
+    reportsCount: 2,
   },
   {
     id: 'JL-3055',
@@ -154,12 +161,13 @@ const MOCK_ISSUES: Issue[] = [
     priorityScore: 91,
     suggestedAction: 'Deploy water tanker immediately',
     peopleAffected: 820,
+    reportsCount: 5,
   },
 ];
 
 interface IssueContextType {
   issues: Issue[];
-  addIssue: (issue: Omit<Issue, 'id' | 'status' | 'reportedAt' | 'region' | 'regionZone' | 'priorityScore' | 'suggestedAction' | 'peopleAffected'>) => string;
+  addIssue: (issue: Omit<Issue, 'id' | 'status' | 'reportedAt' | 'region' | 'regionZone' | 'priorityScore' | 'suggestedAction' | 'peopleAffected' | 'reportsCount'>) => string;
   updateIssueStatus: (id: string, newStatus: Status) => void;
 }
 
@@ -173,7 +181,7 @@ export function IssueProvider({ children }: { children: ReactNode }) {
     return regions[Math.floor(Math.random() * regions.length)];
   };
 
-  const addIssue = (issueData: Omit<Issue, 'id' | 'status' | 'reportedAt' | 'region' | 'regionZone' | 'priorityScore' | 'suggestedAction' | 'peopleAffected'>) => {
+  const addIssue = (issueData: Omit<Issue, 'id' | 'status' | 'reportedAt' | 'region' | 'regionZone' | 'priorityScore' | 'suggestedAction' | 'peopleAffected' | 'reportsCount'>) => {
     const id = `JL-${Math.floor(1000 + Math.random() * 9000)}`;
     const region = getRandomRegion();
     const newIssue: Issue = {
@@ -183,9 +191,10 @@ export function IssueProvider({ children }: { children: ReactNode }) {
       regionZone: REGION_ZONES[region],
       status: 'Pending',
       reportedAt: new Date(),
-      priorityScore: computePriorityScore(issueData.urgency),
-      suggestedAction: SUGGESTED_ACTIONS[issueData.urgency],
-      peopleAffected: computePeopleAffected(issueData.urgency),
+      priorityScore: computePriorityScore(issueData.urgency as UrgencyLevel),
+      suggestedAction: SUGGESTED_ACTIONS[issueData.urgency as UrgencyLevel],
+      peopleAffected: computePeopleAffected(issueData.urgency as UrgencyLevel),
+      reportsCount: 1,
     };
     setIssues((prev) => [newIssue, ...prev]);
     return id;

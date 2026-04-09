@@ -11,6 +11,8 @@ import ReportPage from "./pages/ReportPage";
 import DashboardPage from "./pages/DashboardPage";
 import NotFound from "./pages/not-found";
 
+import { LanguageProvider } from "./context/LanguageContext";
+
 const queryClient = new QueryClient();
 
 function Router() {
@@ -31,15 +33,17 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <IssueProvider>
+      <LanguageProvider>
+        <IssueProvider>
         <ToastProvider>
           <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
             <Router />
           </WouterRouter>
         </ToastProvider>
       </IssueProvider>
-    </QueryClientProvider>
-  );
+    </LanguageProvider>
+  </QueryClientProvider>
+);
 }
 
 export default App;
