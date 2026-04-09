@@ -10,6 +10,19 @@ import {
 import { ProblemType, UrgencyLevel } from '../types';
 import { useLanguage } from '../context/LanguageContext';
 
+const parseGPS = (gpsStr: string): { lat: number, lng: number } | undefined => {
+  if (!gpsStr) return undefined;
+  try {
+    const parts = gpsStr.split(',');
+    const lat = parseFloat(parts[0]);
+    const lng = parseFloat(parts[1]);
+    if (isNaN(lat) || isNaN(lng)) return undefined;
+    return { lat, lng };
+  } catch (e) {
+    return undefined;
+  }
+};
+
 export default function ReportPage() {
   const { addIssue } = useIssues();
   const { showToast } = useSimpleToast();
@@ -66,31 +79,16 @@ export default function ReportPage() {
     }
   };
 
-  const handleFillDemo = () => {
-    setFormData({
-      village: 'Bhusawar',
-      gpsLocation: '27.0345° N, 77.1234° E',
-      problem: 'Handpump Broken',
-      problemDescription: 'Handle completely detached.',
-      urgency: 'High',
-      details: 'The handpump near the primary school has been dispensing muddy water for 2 days, and today the handle broke completely off. Urgent fix needed.'
-    });
-    setReportMode('standard');
-    showToast('Demo data loaded automatically', 'success');
-  };
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.village || !formData.urgency) return;
     if (reportMode === 'standard' && !formData.problem) return;
     
-    if (formData.urgency === 'High' || formData.urgency === 'Critical') {
-      setShowOtpModal(true);
-      setOtpStep('phone');
-      return;
-    }
-    
-    performSubmit();
+    // Identity verification is now mandatory for ALL reports
+    setShowOtpModal(true);
+    setOtpStep('phone');
   };
 
   const handleSendOtp = () => {
@@ -112,7 +110,7 @@ export default function ReportPage() {
     setTimeout(() => {
       const id = addIssue({
         village: formData.village,
-        gpsLocation: formData.gpsLocation,
+        gpsLocation: parseGPS(formData.gpsLocation),
         problem: formData.problem === 'Other' 
             ? (`Other: ${formData.problemDescription}` as ProblemType) 
             : (formData.problem || 'Other') as ProblemType,
@@ -148,14 +146,7 @@ export default function ReportPage() {
               <p className="text-muted-foreground mt-1 text-sm">{t('reportDesc')}</p>
             </div>
             
-            <button 
-              type="button"
-              onClick={handleFillDemo}
-              className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-full transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              {t('fillDemo')}
-            </button>
+
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-8">
@@ -234,10 +225,10 @@ export default function ReportPage() {
                 style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: `right 0.5rem center`, backgroundRepeat: `no-repeat`, backgroundSize: `1.5em 1.5em` }}
               >
                 <option value="" disabled>{t('howSevere')}</option>
-                <option value="Low">{t('low')}</option>
-                <option value="Medium">{t('medium')}</option>
-                <option value="High">{t('high')}</option>
-                <option value="Critical">{t('critical')}</option>
+                <option value="Low">{t('Low')}</option>
+                <option value="Medium">{t('Medium')}</option>
+                <option value="High">{t('High')}</option>
+                <option value="Critical">{t('Critical')}</option>
               </select>
             </div>
 
@@ -321,7 +312,7 @@ export default function ReportPage() {
                             value={formData.problemDescription}
                             onChange={handleChange}
                             required={formData.problem === 'Other'}
-                            placeholder={t('detailsPlaceholder')}
+                            placeholder={t('problemPlaceholder')}
                             className="w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all duration-200"
                           />
                         </motion.div>
@@ -462,31 +453,13 @@ export default function ReportPage() {
                   </>
                 )}
               </button>
-              
-              <button 
-                type="button"
-                onClick={handleFillDemo}
-                className="sm:hidden w-full flex justify-center items-center gap-2 text-sm font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 px-4 py-3 rounded-xl transition-colors"
-              >
-                <Sparkles className="w-4 h-4" />
-                {t('fillDemo')}
-              </button>
             </div>
             
           </form>
         </div>
       </div>
       
-      {/* Information Banner below form */}
-      <div className="mt-8 flex items-start gap-3 bg-blue-50 border border-blue-100 p-4 rounded-xl text-blue-800">
-        <div className="mt-0.5"><AlertTriangle className="w-5 h-5 text-blue-600" /></div>
-        <div>
-          <h4 className="font-semibold text-sm">{t('emergencyTitle')}</h4>
-          <p className="text-xs mt-1 text-blue-700/80 leading-relaxed">
-            {t('emergencyDesc')}
-          </p>
-        </div>
-      </div>
+
 
       {/* OTP Verification Modal */}
       <AnimatePresence>
@@ -527,21 +500,48 @@ export default function ReportPage() {
 
                 {otpStep === 'phone' ? (
                   <div className="space-y-4">
-                    <div>
-                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">{t('phoneNumber')}</label>
-                      <div className="relative mt-1.5">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                          <Phone className="w-4 h-4 text-slate-400" />
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">{t('phoneNumber')}</label>
+                        <div className="relative mt-1.5">
+                          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <Phone className="w-4 h-4 text-slate-400" />
+                          </div>
+                          <input
+                            type="tel"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            placeholder={t('phonePlaceholder')}
+                            className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-slate-900"
+                          />
                         </div>
-                        <input
-                          type="tel"
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          placeholder={t('phonePlaceholder')}
-                          className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-slate-900"
-                        />
+                      </div>
+
+                      <div>
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">{t('govIdOptional')}</label>
+                        <div className="relative mt-1.5 flex gap-2">
+                          <div className="relative flex-1">
+                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                              <ShieldCheck className="w-4 h-4 text-slate-400" />
+                            </div>
+                            <input
+                              type="text"
+                              placeholder={t('govId')}
+                              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 font-medium text-slate-900"
+                            />
+                          </div>
+                          <button 
+                            type="button"
+                            onClick={() => showToast('ID Upload Mocked', 'success')}
+                            className="px-4 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center border border-slate-200 shadow-sm"
+                            title={t('uploadId')}
+                          >
+                            <ImageIcon className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
+
                     <button
                       onClick={handleSendOtp}
                       disabled={phoneNumber.length < 10}

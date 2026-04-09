@@ -16,5 +16,5 @@ export interface Issue {
   suggestedAction: string;
   peopleAffected: number;
   reportsCount?: number;
-  gpsLocation?: string;
+  gpsLocation?: { lat: number; lng: number };
 }

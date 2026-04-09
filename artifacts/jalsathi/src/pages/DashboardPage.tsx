@@ -65,7 +65,8 @@ const REGION_ZONE_COLORS: Record<string, string> = {
 
 export default function DashboardPage() {
   const { issues, updateIssueStatus } = useIssues();
-  const { t } = useLanguage();
+  const { t, getNumberLocale } = useLanguage();
+  const numLocale = getNumberLocale();
 
   const [statusFilter, setStatusFilter] = useState<Status | 'All'>('All');
   const [sortByPriority, setSortByPriority] = useState(true);
@@ -116,7 +117,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <ImpactCard
           icon={<Users className="w-6 h-6 text-blue-600" />}
-          value={`${stats.peopleAffected.toLocaleString()}+`}
+          value={`${stats.peopleAffected.toLocaleString(numLocale)}+`}
           label={t('peopleAffected')}
           sublabel={t('acrossActive')}
           color="bg-blue-50 border-blue-200"
@@ -124,7 +125,7 @@ export default function DashboardPage() {
         />
         <ImpactCard
           icon={<Siren className="w-6 h-6 text-red-600" />}
-          value={stats.criticalVillages.toString()}
+          value={stats.criticalVillages.toLocaleString(numLocale)}
           label={t('criticalVillages')}
           sublabel={t('needImmediate')}
           color="bg-red-50 border-red-200"
@@ -132,7 +133,7 @@ export default function DashboardPage() {
         />
         <ImpactCard
           icon={<Activity className="w-6 h-6 text-orange-600" />}
-          value={stats.activeIssues.toString()}
+          value={stats.activeIssues.toLocaleString(numLocale)}
           label={t('activeIssues')}
           sublabel={t('pendingAssigned')}
           color="bg-orange-50 border-orange-200"
@@ -143,9 +144,9 @@ export default function DashboardPage() {
       {/* Status Summary Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <StatCard title={t('totalReports')} value={stats.total} icon={<MapPin className="w-5 h-5 text-blue-500" />} bg="bg-blue-50" border="border-blue-100" />
-        <StatCard title={t('pending')} value={stats.pending} icon={<Clock className="w-5 h-5 text-amber-500" />} bg="bg-amber-50" border="border-amber-100" />
-        <StatCard title={t('assigned')} value={stats.assigned} icon={<AlertCircle className="w-5 h-5 text-indigo-500" />} bg="bg-indigo-50" border="border-indigo-100" />
-        <StatCard title={t('resolved')} value={stats.resolved} icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />} bg="bg-emerald-50" border="border-emerald-100" />
+        <StatCard title={t('Pending')} value={stats.pending} icon={<Clock className="w-5 h-5 text-amber-500" />} bg="bg-amber-50" border="border-amber-100" />
+        <StatCard title={t('Assigned')} value={stats.assigned} icon={<AlertCircle className="w-5 h-5 text-indigo-500" />} bg="bg-indigo-50" border="border-indigo-100" />
+        <StatCard title={t('Resolved')} value={stats.resolved} icon={<CheckCircle2 className="w-5 h-5 text-emerald-500" />} bg="bg-emerald-50" border="border-emerald-100" />
       </div>
 
       {/* Toolbar */}
@@ -168,25 +169,24 @@ export default function DashboardPage() {
         <div className="flex flex-1 justify-end w-full sm:w-auto gap-4">
           <button
             onClick={() => setSortByPriority(!sortByPriority)}
-            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              sortByPriority
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${sortByPriority
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-            }`}
+              }`}
           >
             <ArrowDownUp className="w-4 h-4" />
             <span className="hidden sm:inline">{sortByPriority ? t('sortPriority') : t('sortDefault')}</span>
             <span className="sm:hidden">Sort</span>
           </button>
-          
+
           <div className="flex bg-slate-100 p-1 rounded-xl">
-            <button 
+            <button
               onClick={() => setViewMode('list')}
               className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${viewMode === 'list' ? 'bg-white shadow-sm ring-1 ring-slate-200 text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}
             >
               <ListIcon className="w-4 h-4" /> <span className="hidden sm:inline">{t('listView')}</span>
             </button>
-            <button 
+            <button
               onClick={() => setViewMode('map')}
               className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${viewMode === 'map' ? 'bg-white shadow-sm ring-1 ring-slate-200 text-blue-700' : 'text-slate-500 hover:text-slate-700'}`}
             >
@@ -197,100 +197,119 @@ export default function DashboardPage() {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-6">
-        
+
         {/* Left Side: Map or List View */}
         <div className="flex-1 space-y-4">
           {viewMode === 'map' ? (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               className="w-full bg-slate-950 rounded-[2.5rem] h-[650px] flex items-center justify-center relative overflow-hidden shadow-2xl border border-slate-800"
             >
-              {/* Complex Animated Background Map */}
-              <div className="absolute inset-0 opacity-30 select-none">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1),transparent_70%)]" />
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-20" />
-                <svg className="w-full h-full text-slate-700/50" viewBox="0 0 800 600" fill="none">
-                  <path d="M100,100 Q200,50 300,100 T500,150 T700,100" stroke="currentColor" strokeWidth="0.5" />
-                  <path d="M50,300 Q200,350 400,300 T750,250" stroke="currentColor" strokeWidth="0.5" />
-                  <path d="M150,500 Q350,450 550,500 T750,450" stroke="currentColor" strokeWidth="0.5" />
-                </svg>
+              {/* High-Fidelity Background Map Image */}
+              <div className="absolute inset-0 select-none">
+                <div className="absolute inset-0 bg-slate-950/40 z-10" />
+                <img 
+                  src="/map_bg.png" 
+                  alt="Sector Map"
+                  className="w-full h-full object-cover opacity-80"
+                />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.1),transparent_70%)] z-10" />
               </div>
 
-              {/* Dynamic Crisis Pulses */}
-              <div className="absolute inset-0 z-10">
-                {/* Cluster 1: Nangal */}
-                <div className="absolute top-[30%] left-[45%] group cursor-pointer">
-                  <div className="relative">
-                    <div className="absolute -inset-8 bg-red-500/20 rounded-full animate-ping duration-[3s]" />
-                    <div className="absolute -inset-4 bg-red-500/30 rounded-full animate-ping duration-[2s]" />
-                    <div className="relative w-4 h-4 bg-red-600 rounded-full shadow-[0_0_20px_rgba(220,38,38,0.8)] border-2 border-white ring-4 ring-red-500/20" />
-                  </div>
-                  <div className="absolute top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none bg-slate-900/90 backdrop-blur-md border border-white/10 p-3 rounded-xl w-40 shadow-2xl z-20">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1">{t('criticalZone')}</div>
-                    <div className="text-white font-bold text-sm">{t('nangalCluster')}</div>
-                    <div className="text-slate-400 text-[10px] mt-1">{t('reportsHigh')}</div>
-                  </div>
-                </div>
-
-                {/* Cluster 2: Bhusawar */}
-                <div className="absolute top-[55%] left-[65%] group cursor-pointer">
-                  <div className="relative">
-                    <div className="absolute -inset-6 bg-orange-500/20 rounded-full animate-ping duration-[4s]" />
-                    <div className="relative w-3 h-3 bg-orange-500 rounded-full shadow-[0_0_15px_rgba(249,115,22,0.6)] border-2 border-white" />
-                  </div>
-                  <div className="absolute top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all pointer-events-none bg-slate-900/90 backdrop-blur-md border border-white/10 p-3 rounded-xl w-40 shadow-2xl z-20">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-orange-400 mb-1">{t('activeCluster')}</div>
-                    <div className="text-white font-bold text-sm">{t('bhusawarArea')}</div>
-                    <div className="text-slate-400 text-[10px] mt-1">{t('reportsMed')}</div>
-                  </div>
-                </div>
-
-                {/* Cluster 3: Jaipur */}
-                <div className="absolute top-[70%] left-[25%] group cursor-pointer">
-                  <div className="relative">
-                    <div className="absolute -inset-4 bg-blue-500/10 rounded-full animate-ping duration-[5s]" />
-                    <div className="relative w-3 h-3 bg-blue-500 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)] border-2 border-white" />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Map UI Overlay */}
-              <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end z-20">
-                <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 p-5 rounded-[2rem] shadow-2xl ring-1 ring-white/5 max-w-xs">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">{t('crisisCluster')}</span>
-                  </div>
-                  <h3 className="text-white font-black text-xl mb-1">{t('nangalRegion')}</h3>
-                  <p className="text-slate-400 text-xs leading-relaxed mb-4">{t('nangalDesc')}</p>
+              {/* Dynamic Crisis Markers from displayedIssues */}
+              <div className="absolute inset-0 z-20 pointer-events-none">
+                {displayedIssues.filter(i => i.gpsLocation).map((issue) => {
+                  // Coordinate Mapping for the premium background image
+                  // Bounds: Lng 71-79, Lat 23-31
+                  const x = ((issue.gpsLocation!.lng - 70.8) / 8.2) * 100;
+                  const y = (1 - (issue.gpsLocation!.lat - 23.5) / 7.5) * 100;
                   
-                  <div className="flex gap-3">
-                    <div className="bg-white/5 rounded-2xl px-3 py-2 border border-white/5">
-                      <div className="text-white font-black text-lg leading-none">{stats.criticalVillages}</div>
-                      <div className="text-[8px] uppercase font-bold text-white/40 mt-1">{t('village')}</div>
+                  const color = issue.urgency === 'Critical' ? 'red' : issue.urgency === 'High' ? 'orange' : issue.urgency === 'Medium' ? 'yellow' : 'blue';
+                  const urgencyStyle = URGENCY_COLORS[issue.urgency];
+
+                  return (
+                    <motion.div 
+                      key={issue.id}
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      className="absolute pointer-events-auto"
+                      style={{ top: `${y}%`, left: `${x}%` }}
+                    >
+                      <div className="relative group cursor-pointer">
+                        {/* Recursive Pulse for High Urgency */}
+                        {(issue.urgency === 'Critical' || issue.urgency === 'High') && (
+                          <>
+                            <div className={`absolute -inset-6 rounded-full animate-ping duration-[3s] ${color === 'red' ? 'bg-red-500/20' : 'bg-orange-500/20'}`} />
+                            <div className={`absolute -inset-10 rounded-full animate-ping duration-[4s] opacity-50 ${color === 'red' ? 'bg-red-500/10' : 'bg-orange-500/10'}`} />
+                          </>
+                        )}
+                        <div className={`relative w-4 h-4 rounded-full border-2 border-white shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-transform group-hover:scale-125 z-10 ${urgencyStyle.dot}`} />
+                        
+                        {/* Hover Tooltip */}
+                        <div className="absolute top-6 left-1/2 -translate-x-1/2 translate-y-2 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all pointer-events-none bg-slate-900/95 backdrop-blur-xl border border-white/10 p-3 rounded-2xl w-48 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30">
+                          <div className={`text-[9px] font-black uppercase tracking-widest mb-1 ${color === 'red' ? 'text-red-400' : color === 'orange' ? 'text-orange-400' : 'text-slate-400'}`}>
+                            {t(issue.urgency)} · {issue.id}
+                          </div>
+                          <div className="text-white font-bold text-xs mb-1">{t(issue.problem)}</div>
+                          <div className="text-slate-400 text-[10px] flex items-center gap-1">
+                            <MapPin className="w-2.5 h-2.5" /> {t(issue.village)}, {t(issue.region)}
+                          </div>
+                          <div className="mt-2 pt-2 border-t border-white/5 flex justify-between items-center text-[9px] font-bold text-slate-300">
+                             <span>{stats.peopleAffected.toLocaleString(numLocale)} {t('peopleAffected')}</span>
+                             <span className={issue.status === 'Pending' ? 'text-amber-400' : 'text-emerald-400'}>{t(issue.status)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Enhanced Map UI Overlay */}
+              <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end z-20 pointer-events-none">
+                {/* Active Focus Panel */}
+                <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 p-6 rounded-[2.5rem] shadow-2xl ring-1 ring-white/5 max-w-sm pointer-events-auto transition-all hover:bg-slate-900/60">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-2xl bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] flex items-center justify-center animate-pulse">
+                      <Siren className="w-6 h-6 text-white" />
                     </div>
-                    <div className="bg-white/5 rounded-2xl px-3 py-2 border border-white/5">
-                      <div className="text-white font-black text-lg leading-none">96.4%</div>
-                      <div className="text-[8px] uppercase font-bold text-white/40 mt-1">{t('intensity')}</div>
+                    <div>
+                      <h3 className="text-white font-black text-xl leading-none">{t('criticalZone')}</h3>
+                      <p className="text-white/40 text-[10px] uppercase font-black tracking-widest mt-1">{t('accurateVerified')}</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-slate-300 text-xs leading-relaxed mb-5 font-medium">
+                    {t('nangalDesc')}
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white/5 rounded-2xl p-3 border border-white/10">
+                      <div className="text-white font-black text-xl leading-none">{stats.criticalVillages}</div>
+                      <div className="text-[9px] uppercase font-black text-white/30 tracking-wider mt-1.5">{t('criticalVillages')}</div>
+                    </div>
+                    <div className="bg-white/5 rounded-2xl p-3 border border-white/10">
+                      <div className="text-white font-black text-xl leading-none">96.4%</div>
+                      <div className="text-[9px] uppercase font-black text-white/30 tracking-wider mt-1.5">{t('intensity')}</div>
                     </div>
                   </div>
                 </div>
 
-                {/* Legend Overlay */}
-                <div className="bg-slate-900/60 backdrop-blur-md border border-white/10 p-3 rounded-2xl flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_red]" />
-                    <span className="text-[10px] text-white font-bold">{t('Critical')}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-orange-500 shadow-[0_0_8px_orange]" />
-                    <span className="text-[10px] text-white font-bold">{t('High')}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-blue-500" />
-                    <span className="text-[10px] text-white font-bold">{t('standard')}</span>
-                  </div>
+                {/* Glassmorphic Legend */}
+                <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 p-5 rounded-[2rem] flex flex-col gap-3 pointer-events-auto">
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30 mb-1">{t('filterByStatus')}</div>
+                  {[
+                    { c: 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]', l: 'Critical' },
+                    { c: 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]', l: 'High' },
+                    { c: 'bg-yellow-400', l: 'Medium' },
+                    { c: 'bg-blue-500', l: 'Low' }
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 group cursor-help">
+                      <div className={`w-2.5 h-2.5 rounded-full transition-transform group-hover:scale-125 ${item.c}`} />
+                      <span className="text-[11px] text-white/80 font-black tracking-tight group-hover:text-white">{t(item.l)}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </motion.div>
@@ -336,11 +355,11 @@ export default function DashboardPage() {
               ].map((user, i) => (
                 <div key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-200 transition-colors cursor-default">
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 font-bold text-sm shadow-sm">
-                    #{i+1}
+                    #{i + 1}
                   </div>
                   <div className="flex-1">
                     <div className="font-bold text-sm text-slate-900">{user.name}</div>
-                    <div className="text-xs text-slate-500 font-medium">{user.points.toLocaleString()} pts</div>
+                    <div className="text-xs text-slate-500 font-medium">{user.points.toLocaleString(numLocale)} {t('pts')}</div>
                   </div>
                   <Award className={`w-6 h-6 ${i === 0 ? 'text-amber-400' : i === 1 ? 'text-slate-400' : 'text-amber-700'}`} />
                 </div>
@@ -393,7 +412,7 @@ function StatCard({ title, value, icon, bg, border }: { title: string; value: nu
 
 function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s: Status) => void }) {
   const urgencyStyle = URGENCY_COLORS[issue.urgency];
-  const { t } = useLanguage();
+  const { t, getNumberLocale } = useLanguage();
 
   const getStatusColor = (s: Status) => {
     switch (s) {
@@ -406,10 +425,10 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
   const scoreColor = issue.priorityScore >= 90
     ? 'text-red-700 bg-red-50/50 border-red-100 shadow-[0_0_20px_rgba(239,68,68,0.1)]'
     : issue.priorityScore >= 70
-    ? 'text-orange-700 bg-orange-50/50 border-orange-100'
-    : issue.priorityScore >= 40
-    ? 'text-yellow-700 bg-yellow-50/50 border-yellow-100'
-    : 'text-emerald-700 bg-emerald-50/50 border-emerald-100';
+      ? 'text-orange-700 bg-orange-50/50 border-orange-100'
+      : issue.priorityScore >= 40
+        ? 'text-yellow-700 bg-yellow-50/50 border-yellow-100'
+        : 'text-emerald-700 bg-emerald-50/50 border-emerald-100';
 
   const zoneColor = REGION_ZONE_COLORS[issue.regionZone] ?? 'bg-slate-50 text-slate-600 border-slate-200';
 
@@ -450,12 +469,12 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <span className="flex items-center text-base text-slate-700 gap-1.5 font-bold">
                 <MapPin className="w-5 h-5 text-slate-400" />
-                {issue.village}
+                {t(issue.village)}
                 <span className="text-slate-300 font-normal">·</span>
-                <span className="text-slate-500 font-semibold">{issue.region}</span>
+                <span className="text-slate-500 font-semibold">{t(issue.region)}</span>
               </span>
               <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${zoneColor}`}>
-                {issue.regionZone}
+                {t(issue.regionZone)}
               </span>
             </div>
 
@@ -463,14 +482,14 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
             {issue.peopleAffected != null && (
               <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-3">
                 <Users className="w-3.5 h-3.5" />
-                <span className="font-medium">{issue.peopleAffected.toLocaleString()} {t('peopleAffectedText')}</span>
+                <span className="font-medium">{issue.peopleAffected.toLocaleString(getNumberLocale())} {t('peopleAffectedText')}</span>
               </div>
             )}
 
             {/* Details */}
             {issue.details && (
               <p className="text-base text-slate-500 line-clamp-3 border-l-4 border-slate-100 pl-4 my-4 italic font-medium">
-                "{issue.details}"
+                "{t(issue.details)}"
               </p>
             )}
 
@@ -480,7 +499,7 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
                 <Lightbulb className="w-6 h-6 text-amber-500 mt-0.5 shrink-0" />
                 <div className="min-w-0">
                   <span className="text-[11px] font-black text-amber-600 uppercase tracking-[0.15em] block mb-1">{t('recommendedAction')}</span>
-                  <p className="text-base font-bold text-amber-900 leading-relaxed">{issue.suggestedAction}</p>
+                  <p className="text-base font-bold text-amber-900 leading-relaxed">{t(issue.suggestedAction)}</p>
                 </div>
               </div>
             )}
@@ -493,7 +512,7 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
             {issue.priorityScore != null && (
               <div className="w-full group">
                 <div className={`relative p-5 rounded-[2rem] border backdrop-blur-md transition-all duration-500 ${scoreColor} overflow-hidden group-hover:shadow-xl group-hover:shadow-current/5 group-hover:-translate-y-1`}>
-                  
+
                   {/* Advanced Pulsing Background for High Priority */}
                   {issue.priorityScore >= 70 && (
                     <div className="absolute inset-0 pointer-events-none">
@@ -506,23 +525,23 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
                     <div className="flex flex-col">
                       <div className="flex items-center gap-1.5 mb-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-                        <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">Analytics</span>
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">{t('analytics')}</span>
                       </div>
                       <div className="flex items-baseline gap-1">
                         <span className="text-4xl font-black tracking-tighter leading-none">{issue.priorityScore}</span>
                         <span className="text-xs font-bold opacity-30">/100</span>
                       </div>
                     </div>
-                    
+
                     {/* Stylized Gauge */}
                     <div className="relative w-14 h-14">
                       <svg className="w-full h-full -rotate-90 filter drop-shadow-[0_0_8px_rgba(0,0,0,0.05)]" viewBox="0 0 36 36">
                         <circle cx="18" cy="18" r="16" fill="none" className="stroke-current opacity-[0.08]" strokeWidth="4" />
-                        <motion.circle 
+                        <motion.circle
                           initial={{ strokeDashoffset: 100 }}
                           animate={{ strokeDashoffset: 100 - issue.priorityScore }}
                           transition={{ duration: 1.5, ease: "easeOut" }}
-                          cx="18" cy="18" r="16" fill="none" className="stroke-current" strokeWidth="4" 
+                          cx="18" cy="18" r="16" fill="none" className="stroke-current" strokeWidth="4"
                           strokeDasharray="100, 100"
                           strokeLinecap="round"
                         />
@@ -561,17 +580,17 @@ function IssueCard({ issue, onStatusChange }: { issue: Issue; onStatusChange: (s
                 <div className={`flex items-center justify-between p-3 rounded-2xl border transition-all duration-300 ${getStatusColor(issue.status)} shadow-sm group-hover/status:shadow-md cursor-pointer relative overflow-hidden`}>
                   <div className="flex flex-col">
                     <span className="text-[10px] uppercase font-bold opacity-60 leading-none mb-1">{t('currentState')}</span>
-                    <span className="font-black text-sm tracking-tight">{t(issue.status.toLowerCase())}</span>
+                    <span className="font-black text-sm tracking-tight">{t(issue.status)}</span>
                   </div>
-                  
+
                   <select
                     value={issue.status}
                     onChange={(e) => onStatusChange(e.target.value as Status)}
                     className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-20"
                   >
-                    <option value="Pending">Pending</option>
-                    <option value="Assigned">Assigned</option>
-                    <option value="Resolved">Resolved</option>
+                    <option value="Pending">{t('PendingSelect')}</option>
+                    <option value="Assigned">{t('AssignedSelect')}</option>
+                    <option value="Resolved">{t('ResolvedSelect')}</option>
                   </select>
 
                   <div className="bg-white/50 p-1.5 rounded-lg border border-white/60 group-hover/status:scale-110 transition-transform">

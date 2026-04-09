@@ -57,6 +57,7 @@ const MOCK_ISSUES: Issue[] = [
     suggestedAction: 'Schedule inspection this week',
     peopleAffected: 130,
     reportsCount: 2,
+    gpsLocation: { lat: 26.9, lng: 70.9 }
   },
   {
     id: 'JL-1029',
@@ -72,6 +73,7 @@ const MOCK_ISSUES: Issue[] = [
     suggestedAction: 'Deploy water tanker immediately',
     peopleAffected: 980,
     reportsCount: 6,
+    gpsLocation: { lat: 28.2, lng: 76.8 }
   },
   {
     id: 'JL-5531',
@@ -87,6 +89,7 @@ const MOCK_ISSUES: Issue[] = [
     suggestedAction: 'Repair within 24 hours',
     peopleAffected: 340,
     reportsCount: 3,
+    gpsLocation: { lat: 28.6, lng: 77.2 }
   },
   {
     id: 'JL-2294',
@@ -102,6 +105,7 @@ const MOCK_ISSUES: Issue[] = [
     suggestedAction: 'Schedule inspection this week',
     peopleAffected: 95,
     reportsCount: 1,
+    gpsLocation: { lat: 28.3, lng: 76.7 }
   },
   {
     id: 'JL-9930',
@@ -117,6 +121,7 @@ const MOCK_ISSUES: Issue[] = [
     suggestedAction: 'Deploy water tanker immediately',
     peopleAffected: 1150,
     reportsCount: 8,
+    gpsLocation: { lat: 26.5, lng: 76.3 }
   },
   {
     id: 'JL-4122',
@@ -132,6 +137,7 @@ const MOCK_ISSUES: Issue[] = [
     suggestedAction: 'Monitor situation',
     peopleAffected: 35,
     reportsCount: 1,
+    gpsLocation: { lat: 28.8, lng: 77.3 }
   },
   {
     id: 'JL-7718',
@@ -147,6 +153,7 @@ const MOCK_ISSUES: Issue[] = [
     suggestedAction: 'Repair within 24 hours',
     peopleAffected: 270,
     reportsCount: 2,
+    gpsLocation: { lat: 28.1, lng: 76.6 }
   },
   {
     id: 'JL-3055',
@@ -162,6 +169,7 @@ const MOCK_ISSUES: Issue[] = [
     suggestedAction: 'Deploy water tanker immediately',
     peopleAffected: 820,
     reportsCount: 5,
+    gpsLocation: { lat: 28.4, lng: 76.9 }
   },
 ];
 
@@ -195,6 +203,10 @@ export function IssueProvider({ children }: { children: ReactNode }) {
       suggestedAction: SUGGESTED_ACTIONS[issueData.urgency as UrgencyLevel],
       peopleAffected: computePeopleAffected(issueData.urgency as UrgencyLevel),
       reportsCount: 1,
+      gpsLocation: issueData.gpsLocation || { 
+        lat: 26.5 + Math.random() * 3, 
+        lng: 74.0 + Math.random() * 4 
+      }
     };
     setIssues((prev) => [newIssue, ...prev]);
     return id;

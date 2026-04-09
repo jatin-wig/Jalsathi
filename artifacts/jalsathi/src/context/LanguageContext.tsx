@@ -64,6 +64,7 @@ export const translations: Translations = {
   gpsPlaceholder: { en: 'Auto-detecting...', hi: 'ऑटो-डिटेक्टिंग...', mw: 'अपने आप जगा देख रयो है...' },
   selectCategory: { en: 'Select category...', hi: 'श्रेणी का चयन करें...', mw: 'समस्या री जात चुणो...' },
   detailsPlaceholder: { en: 'Describe location details (e.g., Behind the school)...', hi: 'स्थान का विवरण दें (जैसे स्कूल के पीछे)...', mw: 'जगा बताओ (जैसे स्कूल रे लारे)...' },
+  problemPlaceholder: { en: 'Describe the problem (e.g., Pipe is leaking or water is muddy)...', hi: 'समस्या का वर्णन करें (जैसे पाइप लीक हो रहा है या पानी गंदा है)...', mw: 'समस्या बताओ (जैसे पाइप फूट ग्यो है)...' },
   clickToUpload: { en: 'Click to upload photo', hi: 'फोटो अपलोड करने के लिए क्लिक करें', mw: 'फोटो लगावा रे वास्ते दबाओ' },
   removePhoto: { en: 'Remove Photo', hi: 'फोटो हटाएँ', mw: 'फोटो हटावो' },
   submitting: { en: 'Submitting...', hi: 'जमा किया जा रहा है...', mw: 'भेज रया हां...' },
@@ -109,7 +110,18 @@ export const translations: Translations = {
   'Medium': { en: 'Medium', hi: 'मध्यम', mw: 'बीच री' },
   'High': { en: 'High', hi: 'उच्च', mw: 'घणी' },
   'Critical': { en: 'Critical', hi: 'गंभीर', mw: 'ज़्यादा' },
-  
+
+  // Zones
+  'Drought-Prone Zone': { en: 'Drought-Prone Zone', hi: 'सूखा प्रवृत्त क्षेत्र', mw: 'काल पड़ने वाली जगा' },
+  'High Groundwater Usage': { en: 'High Groundwater Usage', hi: 'उच्च भूजल उपयोग', mw: 'ज़मीनी पाणी रो घणो इस्तेमाल' },
+  'Urban Water Stress': { en: 'Urban Water Stress', hi: 'शहरी जल तनाव', mw: 'शेर में पाणी री कमी' },
+
+  // Actions
+  'Deploy water tanker immediately': { en: 'Deploy water tanker immediately', hi: 'तुरंत पानी का टैंकर भेजें', mw: 'जल्दी पाणी रो टैंकर भेजो' },
+  'Repair within 24 hours': { en: 'Repair within 24 hours', hi: '24 घंटे के भीतर मरम्मत करें', mw: '24 घन्टा रे मांय ठीक करो' },
+  'Schedule inspection this week': { en: 'Schedule inspection this week', hi: 'इस सप्ताह निरीक्षण निर्धारित करें', mw: 'इण हफ्ता जांच करो' },
+  'Monitor situation': { en: 'Monitor situation', hi: 'स्थिति की निगरानी करें', mw: 'हाल देखो' },
+
   // Status
   'Pending': { en: 'Pending', hi: 'लंबित', mw: 'रुकी थकी' },
   'Assigned': { en: 'Assigned', hi: 'सौंपा गया', mw: 'दे दियो' },
@@ -117,12 +129,64 @@ export const translations: Translations = {
   'PendingSelect': { en: 'Pending', hi: 'लंबित', mw: 'रुकी थकी' },
   'AssignedSelect': { en: 'Assigned', hi: 'सौंपा गया', mw: 'दे दियो' },
   'ResolvedSelect': { en: 'Resolved', hi: 'सुलझा लिया', mw: 'ठीक व्है ग्यो' },
+  analytics: { en: 'Analytics', hi: 'विश्लेषण', mw: 'जांच' },
+  pts: { en: 'pts', hi: 'अंक', mw: 'अंक' },
+  govId: { en: 'Aadhaar Card', hi: 'आधार कार्ड', mw: 'आधार कार्ड' },
+  govIdOptional: { en: 'Aadhaar Card (Optional)', hi: 'आधार कार्ड (वैकल्पिक)', mw: 'आधार कार्ड (मर्जी है)' },
+  uploadId: { en: 'Upload Aadhaar', hi: 'आधार अपलोड करें', mw: 'आधार डालो' },
+  
+  // Regions
+  'Rajasthan': { en: 'Rajasthan', hi: 'राजस्थान', mw: 'राजस्थान' },
+  'Haryana': { en: 'Haryana', hi: 'हरियाणा', mw: 'हरियाणा' },
+  'Delhi NCR': { en: 'Delhi NCR', hi: 'दिल्ली एनसीआर', mw: 'दिल्ली एनसीआर' },
+
+  // Villages
+  'Ramgarh': { en: 'Ramgarh', hi: 'रामगढ़', mw: 'रामगढ़' },
+  'Nangal': { en: 'Nangal', hi: 'नंगल', mw: 'नंगल' },
+  'Mandawar': { en: 'Mandawar', hi: 'मंडावर', mw: 'मंडावर' },
+  'Pataudi': { en: 'Pataudi', hi: 'पटौदी', mw: 'पटौदी' },
+  'Lalsot': { en: 'Lalsot', hi: 'लालसोट', mw: 'लालसोट' },
+  'Khekra': { en: 'Khekra', hi: 'खेखड़ा', mw: 'खेखड़ा' },
+  'Rewari': { en: 'Rewari', hi: 'रेवाड़ी', mw: 'रेवाड़ी' },
+
+  // Mock Details
+  'The main handpump near the panchayat building is completely dry.': { 
+    en: 'The main handpump near the panchayat building is completely dry.', 
+    hi: 'पंचायत भवन के पास मुख्य हैंडपंप पूरी तरह से सूखा है।', 
+    mw: 'पंचायत री बिलडिंग रे कोणे वालो हैंडपंप एकदम सूख ग्यो है।' 
+  },
+  'Entire village has not received piped water for 4 days.': { 
+    en: 'Entire village has not received piped water for 4 days.', 
+    hi: 'पूरे गांव में 4 दिनों से पाइप से पानी नहीं मिला है।', 
+    mw: 'सगळे गांव में ४ दिणां सू पाणी कोनी आयो।' 
+  },
+  'Motor seems burnt out. Needs urgent replacement.': { 
+    en: 'Motor seems burnt out. Needs urgent replacement.', 
+    hi: 'मोटर जल गई लगती है। तत्काल बदलने की आवश्यकता है।', 
+    mw: 'मोटर बल गयी है। जल्दी बदलनी पड़सी।' 
+  },
+  'Summer shortage, need weekly tanker delivery for the outer wards.': { 
+    en: 'Summer shortage, need weekly tanker delivery for the outer wards.', 
+    hi: 'गर्मियों की कमी, बाहरी वार्डों के लिए साप्ताहिक टैंकर वितरण की आवश्यकता है।', 
+    mw: 'ऊनाळे में पाणी री कमी है, बाहरे वार्ड वास्ते टैंकर चाये।' 
+  },
+  'Pipeline broke during road construction.': { 
+    en: 'Pipeline broke during road construction.', 
+    hi: 'सड़क निर्माण के दौरान पाइपलाइन टूट गई।', 
+    mw: 'सडक बणती टेम पाइप टूट ग्यो।' 
+  },
+  'Handle is loose, needs minor repair.': { 
+    en: 'Handle is loose, needs minor repair.', 
+    hi: 'हैंडल ढीला है, मामूली मरम्मत की जरूरत है।', 
+    mw: 'हैंडल ढीलो है, थोड़ो सो ठीक करणों पड़सी।' 
+  },
 };
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: string) => string;
+  getNumberLocale: () => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -134,8 +198,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return translations[key]?.[language] || key;
   };
 
+  const getNumberLocale = () => {
+    switch (language) {
+      case 'hi': return 'hi-IN';
+      case 'mw': return 'hi-IN';
+      default: return 'en-IN';
+    }
+  };
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, getNumberLocale }}>
       {children}
     </LanguageContext.Provider>
   );
